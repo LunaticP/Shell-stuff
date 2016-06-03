@@ -1,0 +1,14 @@
+#/bin/bash
+
+stty -echo -icanon raw time 0 min 0
+tput civis
+printf "\e[32m\e[s"
+while [[ -z $key ]]
+do
+	top -F -R -l 1 -s 0 | grep PhysMem
+	read key
+	printf "\e[u"
+done
+tput cnorm
+stty sane
+printf "\e[0m\n"
