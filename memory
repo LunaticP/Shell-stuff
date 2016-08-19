@@ -1,14 +1,34 @@
-#/bin/bash
+#!/bin/bash
+
+USED=0
+WIRED=0
+UNUSED=0
 
 stty -echo -icanon raw time 0 min 0
 tput civis
-printf "\e[32m\e[s"
+printf "\e7"
 while [[ -z $key ]]
 do
-	top -F -R -l 1 -s 0 | grep PhysMem
+	STRING=`top -l 1 -s 0 | grep PhysMem | rev` 
+	USED=`echo $STRING | cut -d'M' -d' ' -f6 | rev | sed 's/[^0-9]*//g'`
+	WIRED=`echo $STRING | cut -d'M' -d' ' -f4 | rev | sed 's/[^0-9]*//g'`
+	UNUSED=`echo $STRING | cut -d'M' -d' ' -f2 | rev | sed 's/[^0-9]*//g'`
+	MEM=$(($USED+$UNUSED+$WIRED))
+	DISP_USED=$((($USED*$(tput cols))/$MEM-1))
+	DISP_WIRED=$((($WIRED*$(tput cols))/$MEM-1))
+	DISP_UNUSED=$((($UNUSED*$(tput cols))/$MEM-1))
+
+	printf "\e8"
+	printf "\e[31mUsed : $USED Mo\e[0m | \e[33m Wired : $WIRED Mo\e[0m | \e[32m Unused : $UNUSED Mo\e[0m   \n"
+	printf "\e[$(tput cols)D"
+	printf "["
+	printf "\e[31m%${DISP_USED}s" | tr " " "|"
+	printf "\e[33m%${DISP_WIRED}s" | tr " " "|"
+	printf "\e[0m%${DISP_UNUSED}s"
+	printf "\e[0m]\n"
 	read key
-	printf "\e[u"
+
 done
+printf "\e[$(tput cols)D\e[0m\n"
 tput cnorm
 stty sane
-printf "\e[0m\n"
