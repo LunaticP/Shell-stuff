@@ -1,0 +1,27 @@
+alias l='ls -F'
+alias ll='ls -1AF'
+alias ls='ls -G'
+
+r=15
+g=0
+b=0
+i=1
+j=1
+
+export TERM=xterm-256color
+autoload -U colors && colors
+zstyle ':completion:*' menu select
+
+precmd()
+{
+	ARRAY=(196 202 226 76 87 27 93)
+	COLOR=(196 202 208 214 220 226 190 154 118 82 46 47 48 49 50 51 45 39 33 27 21 57 93 129 165 201 200 199 198 197)
+	if [ $i -eq 30 ]; then
+		let "i = 1"
+	fi
+	if [ $j -eq 7 ]; then
+		let "j = 1"
+	fi
+	PROMPT="%F{${COLOR[$((i++))]}}[%T] %F{37}$ %(?.$fg[green].$fg[red])%n%F{36}[%m]%F{97}:%F{33}%~%f "
+#	PS2="%F{${ARRAY[$(j++)]}}>%f "
+}
