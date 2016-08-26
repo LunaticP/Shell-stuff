@@ -8,6 +8,8 @@ b=0
 i=1
 j=1
 
+
+export PATH=$PATH:/sbin/:~/tools
 export TERM=xterm-256color
 autoload -U colors && colors
 zstyle ':completion:*' menu select
@@ -22,6 +24,6 @@ precmd()
 	if [ $j -eq 7 ]; then
 		let "j = 1"
 	fi
-	PROMPT="%F{${COLOR[$((i++))]}}[%T] %F{37}$ %(?.$fg[green].$fg[red])%n%F{36}[%m]%F{97}:%F{33}%~%f "
+	PROMPT="%F{$COLOR[$((i++))]}[%*] %F{37}$ %(?.%F{2}.%F{1})%n%F{36}[%m]%F{97}:%F{33}%~%f "
 #	PS2="%F{${ARRAY[$(j++)]}}>%f "
 }
