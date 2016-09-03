@@ -1,0 +1,46 @@
+#!/bin/bash
+
+TIMER=10 #in seconds
+TIME=$(date +%s)
+DIRECTORY=~/CODE # Directory to copy
+
+if [ ! -z $1 ]; then
+	sleep $1
+fi
+
+while :
+do
+	CURRENT_TIME=$(date +%s)
+	if [ $(($TIME+$TIMER)) -lt $CURRENT_TIME ]; then
+		trap "" 15
+		osascript -e "display notification \"$DIRECTORY sarted copy\" with title \"COPYING\""
+		printf "$(date) :\n" >> $HOME/.codeclone.log.tmp
+		if [ -d $HOME/.__codeclone ]; then
+			rm -Rf $HOME/.__codeclone
+			printf "\t.__codeclone deleted\n" >> $HOME/.codeclone.log.tmp
+		fi
+		if [ -d $HOME/._codeclone ]; then
+			mv $HOME/._codeclone $HOME/.__codeclone
+			printf "\t._codeclone moved to .__codeclone\n" >> $HOME/.codeclone.log.tmp
+		fi
+		if [ -d $HOME/.codeclone ]; then
+			mv $HOME/.codeclone $HOME/._codeclone
+			printf "\t.codeclone moved to ._codeclone\n" >> $HOME/.codeclone.log.tmp
+		fi
+		mkdir $HOME/.codeclone
+		CP_TIME=$(date +%s)
+		cp -Rn $DIRECTORY/* $HOME/.codeclone
+		CP_TIME=$(($(date +%s) - $CP_TIME))
+		printf "\t$DIRECTORY copied to .codeclone in $CP_TIME seconds\n" >> $HOME/.codeclone.log.tmp
+		osascript -e "display notification \"Your code directory has been cloned in $CP_TIME seconds from $DIRECTORY to $HOME/.clodeclone\" with title \"Directory cloned in $(($CP_TIME))s\""
+		echo >> $HOME/.codeclone.log.tmp
+		if [ -f $HOME/.codeclone.log ]; then
+			cat $HOME/.codeclone.log >> $HOME/.codeclone.log.tmp
+		fi
+		cat $HOME/.codeclone.log.tmp > $HOME/.codeclone.log
+		rm $HOME/.codeclone.log.tmp
+		TIME=$(date +%s)
+		trap 15
+	fi
+	sleep 1
+done

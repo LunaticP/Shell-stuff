@@ -1,0 +1,31 @@
+#!/bin/bash
+
+DIR=~/CODE/CodeClone/
+
+if [ -z $1 ]; then
+	printf "Usage : \e[33m\e[36mcodeclone \e[0m[\e[32mstart\e[0m/\e[35mstop\e[0m[\e[33mtime(sec)\e[0m]/\e[31mkill\e[0m]\n"
+elif [ $1 == "start" ]; then
+	sh $DIR/codeclonestart &
+	echo $! > $DIR/.codeclonepid
+elif [ $1 == "stop" ]; then
+	kill -15 $(cat $DIR/.codeclonepid)
+	if [ -z $2 ]; then
+		if ps -p $(cat $DIR/.codeclonepid) > /dev/null; then
+			echo "CodeClone cannot stop now (use \'codeclone kill\' to force quit)"
+		else
+			echo "CodeClone has stopped running"
+		fi
+	else
+		~/CODE/codeclone $2
+		echo CodeClone will restart in $2 seconds
+	fi
+elif [ $1 == "kill" ]; then
+	if ps -p $(cat $DIR/.codeclonepid) > /dev/null; then
+		read -p "Are you sure? Kill can corrupt the copy [Y/y] " REPLY
+		if [[ $REPLY =~ ^[Yy]$ ]]; then
+			kill -9 $(cat $DIR/.codeclonepid)
+		fi
+	else
+		echo CodeClone not running
+	fi
+fi
