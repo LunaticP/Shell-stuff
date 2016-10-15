@@ -24,8 +24,8 @@ do
 	printf "["
 	printf "\e[31m%${DISP_USED}s" | tr " " "|"
 	printf "\e[33m%${DISP_WIRED}s" | tr " " "|"
-	printf "\e[0m%${DISP_UNUSED}s"
-	printf "\e[0m]\n"
+	printf "\e[32m%${DISP_UNUSED}s" | tr " " "|"
+	printf "\e[0m]  \n"
 	read key
 
 done
